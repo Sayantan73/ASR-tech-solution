@@ -1,12 +1,106 @@
+import { useEffect, useRef, useState } from 'react'
 import Icon from './Icon'
 import Logo from './Logo'
 
+const typewriterCopy = 'Digital World'
+const heroStats = [
+  { value: 100, label: 'Happy Clients', icon: 'users' },
+  { value: 150, label: 'Projects Delivered', icon: 'layers' },
+  { value: 10, label: 'Years of Experience', icon: 'trophy' },
+] as const
+
 export default function Hero() {
+  const [typedCopy, setTypedCopy] = useState('')
+  const [isTyping, setIsTyping] = useState(true)
+  const [counts, setCounts] = useState(() => heroStats.map(() => 0))
+  const statsRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const frame = window.requestAnimationFrame(() => {
+        setTypedCopy(typewriterCopy)
+        setIsTyping(false)
+      })
+      return () => window.cancelAnimationFrame(frame)
+    }
+
+    let characterIndex = 0
+    let timeoutId = 0
+
+    const typeNextCharacter = () => {
+      characterIndex += 1
+      setTypedCopy(typewriterCopy.slice(0, characterIndex))
+
+      if (characterIndex === typewriterCopy.length) {
+        setIsTyping(false)
+        return
+      }
+
+      timeoutId = window.setTimeout(typeNextCharacter, 75)
+    }
+
+    timeoutId = window.setTimeout(typeNextCharacter, 75)
+    return () => window.clearTimeout(timeoutId)
+  }, [])
+
+  useEffect(() => {
+    const statsElement = statsRef.current
+    if (!statsElement) return
+
+    const targets = heroStats.map(({ value }) => value)
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+      const frame = window.requestAnimationFrame(() => setCounts(targets))
+      return () => window.cancelAnimationFrame(frame)
+    }
+
+    let animationFrame = 0
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) return
+
+      observer.disconnect()
+      const startedAt = performance.now()
+      const duration = 1300
+
+      const animateCounts = (now: number) => {
+        const progress = Math.min((now - startedAt) / duration, 1)
+        const easedProgress = 1 - (1 - progress) ** 3
+        setCounts(targets.map((target) => Math.round(target * easedProgress)))
+
+        if (progress < 1) {
+          animationFrame = window.requestAnimationFrame(animateCounts)
+        }
+      }
+
+      animationFrame = window.requestAnimationFrame(animateCounts)
+    }, { threshold: 0.25 })
+
+    observer.observe(statsElement)
+    return () => {
+      observer.disconnect()
+      window.cancelAnimationFrame(animationFrame)
+    }
+  }, [])
+
   return (
     <section className="relative flex h-auto flex-col overflow-hidden bg-[#f1f2f4] sm:h-[234px] sm:flex-row md:h-[clamp(234px,30.5vw,440px)]" id="home">
       <div className="relative z-[3] w-full px-[22px] pb-5 pt-[30px] sm:w-[51%] sm:pb-0 sm:pl-6 sm:pr-0 sm:pt-6 md:pl-[clamp(46px,6vw,92px)] md:pt-[clamp(24px,3.2vw,46px)]">
         <p className="mb-3 flex items-center gap-[7px] text-[12px] font-extrabold text-[#202638] sm:mb-[7px] sm:text-[10px] md:mb-[clamp(7px,1vw,14px)] md:gap-[clamp(7px,.9vw,12px)] md:text-[clamp(10px,1.25vw,17px)]"><span className="h-[13px] w-[3px] bg-[#d02c32] md:h-[clamp(13px,1.7vw,21px)] md:w-1" /> Welcome to ASR Tech Solutions</p>
-        <h1 className="m-0 text-[clamp(27px,7vw,36px)] leading-[1.08] tracking-[-1px] text-[#0f1729] sm:text-[clamp(23px,3.3vw,26px)] sm:leading-[1.12] md:text-[clamp(25px,3.4vw,48px)] md:tracking-[-.04em]">Innovative Tech Solutions<br />for a <em className="not-italic text-[#df3036]">Digital World</em></h1>
+        <h1 className="m-0 text-[clamp(27px,7vw,36px)] leading-[1.08] tracking-[-1px] text-[#0f1729] sm:text-[clamp(23px,3.3vw,26px)] sm:leading-[1.12] md:text-[clamp(25px,3.4vw,48px)] md:tracking-[-.04em]">
+          Innovative Tech Solutions<br />
+          for a{' '}
+          <em className="not-italic text-[#df3036]">
+            <span className="sr-only">{typewriterCopy}</span>
+            <span aria-hidden="true" className="inline-grid align-baseline">
+              <span className="invisible col-start-1 row-start-1 whitespace-nowrap">{typewriterCopy}</span>
+              <span className="relative col-start-1 row-start-1 justify-self-start whitespace-nowrap">
+                {typedCopy}
+                {isTyping && <span className="absolute -right-[3px] top-0 animate-pulse motion-reduce:animate-none">|</span>}
+              </span>
+            </span>
+          </em>
+        </h1>
         <p className="my-3 mb-4 text-[13px] leading-[1.5] text-[#242936] sm:mb-[9px] sm:mt-2 sm:text-[10.5px] sm:leading-[14px] md:mb-[clamp(9px,1.4vw,20px)] md:mt-[clamp(8px,1.2vw,17px)] md:text-[clamp(10.5px,1.2vw,17px)] md:leading-[1.35] max-[380px]:[&_br]:hidden">
           We build modern, scalable and user-friendly digital solutions<br />that help businesses grow and succeed.
         </p>
@@ -16,19 +110,17 @@ export default function Hero() {
           </a>
           <a className="flex h-9 w-[114px] items-center justify-center rounded-full border border-[#40475a] bg-white text-[11px] font-bold text-[#232836] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_6px_14px_rgba(19,24,58,.12)] sm:h-6 sm:w-[86px] sm:text-[9px] md:h-[clamp(24px,3.2vw,44px)] md:w-[clamp(86px,11.5vw,160px)] md:text-[clamp(9px,1vw,14px)]" href="#about">About Us</a>
         </div>
-        <div className="mt-[21px] flex justify-between sm:mt-4 sm:justify-start md:mt-[clamp(16px,2.1vw,30px)]">
-          <div className="flex w-auto items-center gap-[3px] text-[#d63035] sm:w-[clamp(90px,14.2vw,109px)] sm:gap-[6px] md:w-[clamp(90px,14.2vw,190px)] md:gap-[clamp(6px,.8vw,11px)]">
-            <Icon className="h-[18px] w-[18px] sm:h-6 sm:w-6 md:h-[clamp(24px,3vw,40px)] md:w-[clamp(24px,3vw,40px)]" name="users" />
-            <p className="m-0 flex flex-col text-[#111]"><strong className="text-[13px] leading-[1] md:text-[clamp(13px,1.7vw,23px)]">100+</strong><span className="mt-[3px] text-[7px] sm:text-[7.5px] md:mt-1 md:text-[clamp(7.5px,.9vw,12px)]">Happy Clients</span></p>
-          </div>
-          <div className="flex w-auto items-center gap-[3px] text-[#d63035] sm:w-[clamp(90px,14.2vw,109px)] sm:gap-[6px] md:w-[clamp(90px,14.2vw,190px)] md:gap-[clamp(6px,.8vw,11px)]">
-            <Icon className="h-[18px] w-[18px] sm:h-6 sm:w-6 md:h-[clamp(24px,3vw,40px)] md:w-[clamp(24px,3vw,40px)]" name="layers" />
-            <p className="m-0 flex flex-col text-[#111]"><strong className="text-[13px] leading-[1] md:text-[clamp(13px,1.7vw,23px)]">150+</strong><span className="mt-[3px] text-[7px] sm:text-[7.5px] md:mt-1 md:text-[clamp(7.5px,.9vw,12px)]">Projects Delivered</span></p>
-          </div>
-          <div className="flex w-auto items-center gap-[3px] text-[#d63035] sm:w-[clamp(90px,14.2vw,109px)] sm:gap-[6px] md:w-[clamp(90px,14.2vw,190px)] md:gap-[clamp(6px,.8vw,11px)]">
-            <Icon className="h-[18px] w-[18px] sm:h-6 sm:w-6 md:h-[clamp(24px,3vw,40px)] md:w-[clamp(24px,3vw,40px)]" name="trophy" />
-            <p className="m-0 flex flex-col text-[#111]"><strong className="text-[13px] leading-[1] md:text-[clamp(13px,1.7vw,23px)]">10+</strong><span className="mt-[3px] text-[7px] sm:text-[7.5px] md:mt-1 md:text-[clamp(7.5px,.9vw,12px)]">Years of Experience</span></p>
-          </div>
+        <div ref={statsRef} className="mt-[21px] flex justify-between sm:mt-4 sm:justify-start md:mt-[clamp(16px,2.1vw,30px)]">
+          {heroStats.map((stat, index) => (
+            <div className="flex w-auto items-center gap-[3px] text-[#d63035] sm:w-[clamp(90px,14.2vw,109px)] sm:gap-[6px] md:w-[clamp(90px,14.2vw,190px)] md:gap-[clamp(6px,.8vw,11px)]" key={stat.label}>
+              <Icon className="h-[18px] w-[18px] sm:h-6 sm:w-6 md:h-[clamp(24px,3vw,40px)] md:w-[clamp(24px,3vw,40px)]" name={stat.icon} />
+              <p className="m-0 flex flex-col text-[#111]">
+                <span className="sr-only">{stat.value}+</span>
+                <strong aria-hidden="true" className="text-[13px] leading-[1] md:text-[clamp(13px,1.7vw,23px)]">{counts[index]}+</strong>
+                <span className="mt-[3px] text-[7px] sm:text-[7.5px] md:mt-1 md:text-[clamp(7.5px,.9vw,12px)]">{stat.label}</span>
+              </p>
+            </div>
+          ))}
         </div>
       </div>
       <div className="relative h-[clamp(205px,62vw,300px)] w-full overflow-hidden sm:h-full sm:w-[49%]" aria-label="Professional working on a laptop">
