@@ -21,6 +21,8 @@ export type IconName =
   | 'instagram'
   | 'youtube'
   | 'facebook'
+  | 'menu'
+  | 'close'
 
 type IconProps = {
   name: IconName
@@ -114,6 +116,8 @@ const paths: Record<IconName, ReactNode> = {
     </>
   ),
   facebook: <path d="M14.5 22v-8h3l.5-4h-3.5V8c0-1.2.4-2 2-2h1.7V2.4c-.8-.1-1.8-.2-3-.2-3 0-5.2 1.8-5.2 5.3V10H7v4h3v8h4.5Z" fill="currentColor" stroke="none" />,
+  menu: <path d="M4 6h16M4 12h16M4 18h16" />,
+  close: <path d="m6 6 12 12M18 6 6 18" />,
 }
 
 export default function Icon({ name, className, size = 24 }: IconProps) {
