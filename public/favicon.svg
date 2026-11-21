@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="13" fill="#fff"/>
+  <path d="M43 20c7-2 12-6 17-13-.5 9-5 15-13 18l-7 1Z" fill="#65c8e8"/>
+  <text x="3" y="43" fill="#e51f2b" font-family="Arial,Helvetica,sans-serif" font-size="35" font-style="italic" font-weight="900" letter-spacing="-4">ASR</text>
+  <path d="M6 47h38l5-3" fill="none" stroke="#e51f2b" stroke-width="2.5"/>
+  <text x="12" y="56" fill="#171717" font-family="Arial,Helvetica,sans-serif" font-size="5.4" font-weight="800" letter-spacing=".1">TECH SOLUTIONS</text>
+</svg>
