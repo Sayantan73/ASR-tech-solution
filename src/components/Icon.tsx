@@ -55,7 +55,9 @@ const paths: Record<IconName, ReactNode> = {
       <path d="M10 18h4" />
     </>
   ),
-  cloud: <path d="M7.5 19h10a4.5 4.5 0 0 0 .4-9 6.5 6.5 0 0 0-12.4 1A4.2 4.2 0 0 0 7.5 19Z" />,
+  cloud: (
+    <path d="M7.5 19h10a4.5 4.5 0 0 0 .4-9 6.5 6.5 0 0 0-12.4 1A4.2 4.2 0 0 0 7.5 19Z" />
+  ),
   monitor: (
     <>
       <rect x="2.5" y="4" width="19" height="13" rx="1.5" />
@@ -88,7 +90,9 @@ const paths: Record<IconName, ReactNode> = {
       <circle cx="12" cy="10" r="2" />
     </>
   ),
-  phone: <path d="M6.5 3.5h3l1.5 4-2 1.5a15 15 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4.5 5.7a2 2 0 0 1 2-2.2Z" />,
+  phone: (
+    <path d="M6.5 3.5h3l1.5 4-2 1.5a15 15 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2.2 2A17 17 0 0 1 4.5 5.7a2 2 0 0 1 2-2.2Z" />
+  ),
   mail: (
     <>
       <rect x="2.5" y="4.5" width="19" height="15" rx="2" />
@@ -115,7 +119,13 @@ const paths: Record<IconName, ReactNode> = {
       <path d="m10 9 5 3-5 3z" fill="currentColor" stroke="none" />
     </>
   ),
-  facebook: <path d="M14.5 22v-8h3l.5-4h-3.5V8c0-1.2.4-2 2-2h1.7V2.4c-.8-.1-1.8-.2-3-.2-3 0-5.2 1.8-5.2 5.3V10H7v4h3v8h4.5Z" fill="currentColor" stroke="none" />,
+  facebook: (
+    <path
+      d="M14.5 22v-8h3l.5-4h-3.5V8c0-1.2.4-2 2-2h1.7V2.4c-.8-.1-1.8-.2-3-.2-3 0-5.2 1.8-5.2 5.3V10H7v4h3v8h4.5Z"
+      fill="currentColor"
+      stroke="none"
+    />
+  ),
   menu: <path d="M4 6h16M4 12h16M4 18h16" />,
   close: <path d="m6 6 12 12M18 6 6 18" />,
 }
